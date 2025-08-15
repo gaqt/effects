@@ -1,0 +1,24 @@
+[
+  {
+    "arguments": [
+      "/usr/bin/g++",
+      "-c",
+      "--std=c++20",
+      "-Wall",
+      "-Wextra",
+      "-Wpedantic",
+      "-DNDEBUG",
+      "-O3",
+      "-mtune=native",
+      "-Werror",
+      "-I./lib/raylib/src",
+      "dist/lib/libraylib.a",
+      "-o",
+      "dist/release/out",
+      "src/main.cpp"
+    ],
+    "directory": "/home/puppy/Code/racegame",
+    "file": "/home/puppy/Code/racegame/src/main.cpp",
+    "output": "/home/puppy/Code/racegame/dist/release/out"
+  }
+]
