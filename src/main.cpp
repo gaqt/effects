@@ -1,9 +1,11 @@
+#include <algorithm>
 #include <climits>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstdlib>
 #include <ctime>
+#include <deque>
 #include <map>
 #include <raylib.h>
 #include <raymath.h>
@@ -15,8 +17,6 @@ using namespace std;
 
 #define WIDTH 600
 #define HEIGHT 600
-#define GRAVITY 0.000002
-#define MAX_DOTS 100
 
 struct Attractor {
    Vector2 pos;
@@ -54,9 +54,15 @@ struct Dot {
 };
 
 struct Path {
-   vector<pair<Vector2, Color>> points;
-   size_t start;
-   bool decay;
+   deque<pair<Vector2, Color>> points;
+
+   static Path create(Dot &refDot, size_t pathSize) {
+      deque<pair<Vector2, Color>> points;
+      for (size_t i = 0; i < pathSize; i++)
+         points.push_back({refDot.pos, {}});
+
+      return {points};
+   }
 };
 
 int main() {
@@ -72,23 +78,26 @@ int main() {
    Texture2D dotTexture = LoadTexture("resources/dot.png");
    // Texture2D trailTexture = LoadTexture("resources/trail.png");
 
+   size_t maxDots = 100;
+   size_t pathSize = 30;
+   float gravity = 0.000002;
+
    while (!WindowShouldClose()) {
-      if (dots.size() < MAX_DOTS) {
+      if (dots.size() < maxDots) {
          Dot dot = Dot::random(attractor);
-         paths[dot.id] = {{{dot.pos, {}}}, 0, false};
+         paths[dot.id] = Path::create(dot, pathSize);
          dots.push_back(dot);
       }
 
       for (auto &dot : dots) {
          Vector2 diff = attractor.pos - dot.pos;
          float dist = Vector2Distance(attractor.pos, dot.pos);
-         diff = Vector2Scale(diff, dist * GRAVITY);
+         diff = Vector2Scale(diff, dist * gravity);
          dot.velocity += diff;
          dot.pos += dot.velocity;
          if (dist < attractor.radius) {
-            paths[dot.id].decay = true;
             dot = Dot::random(attractor);
-            paths[dot.id] = {{}, 0, false};
+            paths[dot.id] = Path::create(dot, pathSize);
          }
 
          dot.color.a =
@@ -100,12 +109,10 @@ int main() {
 
       vector<size_t> toDelete;
       for (auto &[idx, path] : paths) {
-         if (!path.decay)
-            continue;
-         if (path.start >= path.points.size())
+         if (path.points.empty())
             toDelete.push_back(idx);
          else
-            path.start += 3;
+            path.points.pop_front();
       }
       for (auto idx : toDelete)
          paths.erase(idx);
@@ -113,12 +120,11 @@ int main() {
       BeginDrawing();
       ClearBackground(BLACK);
       for (auto &[idx, path] : paths) {
-         if (path.start >= path.points.size())
+         if (path.points.size() == 0)
             continue;
-         auto prev = path.points[path.start];
-         for (size_t i = path.start + 1; i < path.points.size(); i++) {
-            auto crr = path.points[i];
-            DrawLineV(prev.first, crr.first, prev.second);
+         auto prev = path.points.begin();
+         for (auto crr = ++path.points.begin(); crr != path.points.end(); crr++) {
+            DrawLineV(prev->first, crr->first, prev->second);
             prev = crr;
          }
       }
