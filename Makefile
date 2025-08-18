@@ -4,7 +4,7 @@ DEBUGFLAGS := -DDEBUG -ftrapv -fstrict-overflow -Og -ggdb
 RELEASEFLAGS := -DNDEBUG -O3 -mtune=native
 SHAREDLIBS := -lm -lX11 -lpthread -lrt
 STATICLIBS := dist/lib/libraylib.a
-INCLUDE := -I./lib/raylib/src
+INCLUDE := -I./lib/raylib/src -I./lib/raygui
 
 LIBS := $(STATICLIBS) $(SHAREDLIBS)
 

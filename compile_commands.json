@@ -10,15 +10,15 @@
       "-DNDEBUG",
       "-O3",
       "-mtune=native",
-      "-Werror",
       "-I./lib/raylib/src",
+      "-I./lib/raygui",
       "dist/lib/libraylib.a",
       "-o",
       "dist/release/out",
       "src/main.cpp"
     ],
-    "directory": "/home/puppy/Code/racegame",
-    "file": "/home/puppy/Code/racegame/src/main.cpp",
-    "output": "/home/puppy/Code/racegame/dist/release/out"
+    "directory": "/home/puppy/Code/effects",
+    "file": "/home/puppy/Code/effects/src/main.cpp",
+    "output": "/home/puppy/Code/effects/dist/release/out"
   }
 ]
